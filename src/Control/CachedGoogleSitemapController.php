@@ -22,6 +22,19 @@ use Wilr\GoogleSitemaps\Control\GoogleSitemapController;
 class CachedGoogleSitemapController extends GoogleSitemapController
 {
     /**
+     * index() and sitemap() are overridden here, so this subclass becomes their defining
+     * class and must list them (and the inherited stylesheet actions) explicitly.
+     *
+     * @var array
+     */
+    private static $allowed_actions = [
+        'index',
+        'sitemap',
+        'styleSheetIndex',
+        'styleSheet',
+    ];
+
+    /**
      * Serve and write the static cache at all.
      *
      * @config
@@ -40,7 +53,12 @@ class CachedGoogleSitemapController extends GoogleSitemapController
     private static $cache_lifetime = 0;
 
     /**
-     * Absolute cache directory. Empty defaults to <TEMP_PATH>/sitemap-cache.
+     * Absolute cache directory. Empty defaults to <ASSETS_PATH>/.sitemap-cache.
+     *
+     * The default is deliberately user-independent (unlike TEMP_PATH, which is namespaced
+     * per process user) so the web server and the cron task share one cache even when they
+     * run as different users. The files are public sitemap XML; the controller reads them
+     * from disk, never via their URL.
      *
      * @config
      * @var string
@@ -156,8 +174,13 @@ class CachedGoogleSitemapController extends GoogleSitemapController
         $dir = (string) $this->config()->get('cache_dir');
 
         if (!$dir) {
-            $base = defined('TEMP_PATH') ? TEMP_PATH : sys_get_temp_dir();
-            $dir = $base . DIRECTORY_SEPARATOR . 'sitemap-cache';
+            if (defined('ASSETS_PATH')) {
+                $dir = ASSETS_PATH . DIRECTORY_SEPARATOR . '.sitemap-cache';
+            } elseif (defined('TEMP_PATH')) {
+                $dir = TEMP_PATH . DIRECTORY_SEPARATOR . 'sitemap-cache';
+            } else {
+                $dir = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'sitemap-cache';
+            }
         }
 
         return rtrim($dir, '/\\');

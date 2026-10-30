@@ -20,7 +20,9 @@ It backports the static cache that the upstream module only ships in its **CMS 6
 - `GenerateSitemapCacheTask` (cron) requests the index and every sub-sitemap with
   `?regenerate=1`, forcing a fresh render + write. `?regenerate=1` is honoured only from CLI
   or for an admin, so it can't be abused from the web.
-- Cache files live in `<TEMP_PATH>/sitemap-cache` by default (outside the web root).
+- Cache files live in `<ASSETS_PATH>/.sitemap-cache` by default. That location is
+  user-independent (unlike `TEMP_PATH`, which is namespaced per process user), so the web
+  server and the cron task share one cache even when they run as different users.
 
 ## Install
 
@@ -58,8 +60,9 @@ vendor/bin/sake dev/tasks/GenerateSitemapCacheTask
 
 - `SS_BASE_URL` (or `SilverStripe\Control\Director.alternate_base_url`) must be set, so the
   `<loc>` URLs get the correct scheme + host when rendered from CLI.
-- The cron user and the web user must share the same `TEMP_PATH` (the default on a standard
-  single-user Plesk subscription). If they differ, set an explicit `cache_dir` both can write.
+- The cron user and the web user both need write access to the cache dir. The default under
+  `ASSETS_PATH` is user-independent, so this works even when they differ; if you point
+  `cache_dir` elsewhere, make sure both users can write there.
 
 ## Notes
 

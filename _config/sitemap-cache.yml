@@ -16,5 +16,6 @@ XD\SitemapCache\Control\CachedGoogleSitemapController:
   #   0 = never expire on read; only GenerateSitemapCacheTask (cron) refreshes it.
   #  >0 = a live request for a file older than this regenerates it inline (self-healing).
   cache_lifetime: 0
-  # Absolute cache directory. Empty = <TEMP_PATH>/sitemap-cache (outside the web root).
+  # Absolute cache directory. Empty = <ASSETS_PATH>/.sitemap-cache
+  # (user-independent, so the web server and the cron task share one cache).
   cache_dir: ''
