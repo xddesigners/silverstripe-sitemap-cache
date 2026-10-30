@@ -61,12 +61,16 @@ Wilr\GoogleSitemaps\GoogleSitemap:
   enable_static_cache: true   # serve/write the cache; false = always render live
   enable_gzip: true           # write .gz copies + serve gzip
   static_cache_path: 'sitemaps'  # relative => <PUBLIC_PATH>/sitemaps; absolute => as-is
-  regenerate_time: 3600       # read-side max-age in seconds; 0 = serve regardless of age (cron-only)
+  regenerate_time: 0          # read-side max-age in seconds; 0 (default) = serve while the file exists, cron-only
 ```
 
-Note: upstream uses `regenerate_time` as the interval for its queued job. This backport ships
-no job, so it applies the value as a read-side max-age (a request for an older cached file
-regenerates it inline). Run the cron task regardless — see below.
+Note: `regenerate_time: 0` (the default) is the safe, recommended mode — a cached file is
+always served while it exists, and ONLY the cron regenerates it. Web requests never run the
+(slow) generation, so a timed-out or partial render can't be cached from a web hit, and a
+flush can't trigger one. Set it `> 0` to also self-heal on read (regenerate inline when a file
+is older than N seconds) if you can't run a cron — at the cost of an occasional slow, and
+possibly partial, request being cached. Upstream uses this value as its queued-job interval;
+this backport ships no job. Run the cron either way — see below.
 
 ## Cron
 

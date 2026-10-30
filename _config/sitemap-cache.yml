@@ -19,4 +19,4 @@ Wilr\GoogleSitemaps\GoogleSitemap:
   enable_static_cache: true
   enable_gzip: true
   static_cache_path: 'sitemaps'
-  regenerate_time: 3600
+  regenerate_time: 0

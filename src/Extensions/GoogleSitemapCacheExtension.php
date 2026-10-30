@@ -47,13 +47,20 @@ class GoogleSitemapCacheExtension extends Extension
     private static $static_cache_path = 'sitemaps';
 
     /**
-     * Seconds a cached file stays valid. Upstream uses this as the queued-job re-queue
-     * interval; this backport ships no job, so it is applied as a read-side max-age: a
-     * request for an older file regenerates it inline. 0 = serve regardless of age (rely
-     * solely on the cron task). Either way, run GenerateGoogleSitemapTask from cron.
+     * Read-side max-age in seconds.
+     *
+     * 0 (default, recommended) = a cached file is always served while it exists; ONLY the
+     * cron task regenerates it. Web requests then never run the expensive generation, so a
+     * slow, timed-out or partial render can never be cached from a web hit (and a flush can't
+     * trigger one either). Requires the cron to keep the cache fresh.
+     *
+     * > 0 = also regenerate inline when a cached file is older than N seconds (self-heals
+     * without a cron, at the cost of an occasional slow — and potentially partial — request
+     * being cached). Upstream uses this value as its queued-job interval; this backport ships
+     * no job. Either way, run GenerateGoogleSitemapTask from cron.
      *
      * @config
      * @var int
      */
-    private static $regenerate_time = 3600;
+    private static $regenerate_time = 0;
 }
