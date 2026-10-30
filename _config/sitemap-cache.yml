@@ -1,0 +1,20 @@
+---
+Name: xd-sitemap-cache
+After: '#googlesitemaproutes'
+---
+# Re-point the sitemap.xml route (and, via the controller's own action routing,
+# every sub-sitemap under it) to the caching controller. Loaded After the module
+# routes so this rule wins.
+SilverStripe\Control\Director:
+  rules:
+    'sitemap.xml': 'XD\SitemapCache\Control\CachedGoogleSitemapController'
+---
+XD\SitemapCache\Control\CachedGoogleSitemapController:
+  # Serve and write the static cache. Set to false to fall back to live rendering.
+  cache_enabled: true
+  # Seconds a cached file stays fresh for *live* web requests.
+  #   0 = never expire on read; only GenerateSitemapCacheTask (cron) refreshes it.
+  #  >0 = a live request for a file older than this regenerates it inline (self-healing).
+  cache_lifetime: 0
+  # Absolute cache directory. Empty = <TEMP_PATH>/sitemap-cache (outside the web root).
+  cache_dir: ''

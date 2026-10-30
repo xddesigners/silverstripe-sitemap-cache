@@ -1,0 +1,29 @@
+{
+    "name": "xddesigners/silverstripe-sitemap-cache",
+    "description": "Static file cache for silverstripe/googlesitemaps (wilr) on SilverStripe 4/5, regenerated out-of-band by a cron task. Backports the static cache that upstream only ships in its CMS 6-only 4.1+ releases.",
+    "type": "silverstripe-vendormodule",
+    "license": "BSD-3-Clause",
+    "keywords": ["silverstripe", "sitemap", "googlesitemaps", "cache", "seo"],
+    "authors": [
+        {
+            "name": "XD designers",
+            "homepage": "https://www.xd.nl"
+        }
+    ],
+    "require": {
+        "silverstripe/framework": "^4.10 || ^5",
+        "silverstripe/googlesitemaps": "^2.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "XD\\SitemapCache\\": "src/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-main": "1.x-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
