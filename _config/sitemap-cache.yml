@@ -2,20 +2,21 @@
 Name: xd-sitemap-cache
 After: '#googlesitemaproutes'
 ---
-# Re-point the sitemap.xml route (and, via the controller's own action routing,
-# every sub-sitemap under it) to the caching controller. Loaded After the module
-# routes so this rule wins.
+# Re-point the sitemap routes to the caching controller (loaded After the module routes so
+# these rules win). The controller extends the module controller, so sub-sitemap routing
+# (sitemap.xml/sitemap/$Class/$Page) is inherited; sitemap.xml.gz serves the gzip index.
 SilverStripe\Control\Director:
   rules:
+    'sitemap.xml.gz': 'XD\SitemapCache\Control\CachedGoogleSitemapController'
     'sitemap.xml': 'XD\SitemapCache\Control\CachedGoogleSitemapController'
----
-XD\SitemapCache\Control\CachedGoogleSitemapController:
-  # Serve and write the static cache. Set to false to fall back to live rendering.
-  cache_enabled: true
-  # Seconds a cached file stays fresh for *live* web requests.
-  #   0 = never expire on read; only GenerateSitemapCacheTask (cron) refreshes it.
-  #  >0 = a live request for a file older than this regenerates it inline (self-healing).
-  cache_lifetime: 0
-  # Absolute cache directory. Empty = <ASSETS_PATH>/.sitemap-cache
-  # (user-independent, so the web server and the cron task share one cache).
-  cache_dir: ''
+
+# Declare the upstream static-cache config keys on GoogleSitemap and switch the cache on.
+# These are the same keys the native CMS 6 (4.1+) feature reads, so the block carries over
+# verbatim if the site later upgrades (then drop this module).
+Wilr\GoogleSitemaps\GoogleSitemap:
+  extensions:
+    - XD\SitemapCache\Extensions\GoogleSitemapCacheExtension
+  enable_static_cache: true
+  enable_gzip: true
+  static_cache_path: 'sitemaps'
+  regenerate_time: 3600

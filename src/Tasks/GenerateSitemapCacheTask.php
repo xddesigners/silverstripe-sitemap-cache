@@ -7,21 +7,26 @@ use SilverStripe\Dev\BuildTask;
 use Wilr\GoogleSitemaps\GoogleSitemap;
 
 /**
- * Regenerates the static sitemap cache (the index plus every sub-sitemap) by requesting
- * each cached URL with ?regenerate=1, so {@see \XD\SitemapCache\Control\CachedGoogleSitemapController}
- * renders fresh XML and writes it to disk. Intended to run from cron:
+ * Regenerates the static sitemap cache (the index plus every sub-sitemap, each with a .gz
+ * copy when gzip is enabled) by requesting each cached URL with ?regenerate=1, so
+ * {@see \XD\SitemapCache\Control\CachedGoogleSitemapController} renders fresh XML and writes
+ * it to disk. Intended to run from cron:
  *
- *   0 * * * * /path/to/site/vendor/bin/sake dev/tasks/GenerateSitemapCacheTask
+ *   0 * * * * /path/to/site/vendor/bin/sake dev/tasks/GenerateGoogleSitemapTask
  *
- * Live visitors then always hit the cache. Requires SS_BASE_URL (or
- * Director.alternate_base_url) to be set so the <loc> entries get the right host.
+ * The segment is GenerateGoogleSitemapTask (the same as the upstream CMS 6 task), so the cron
+ * line is identical before and after a CMS 6 upgrade. Live visitors always hit the cache.
+ * Requires SS_BASE_URL (or Director.alternate_base_url) to be set so the <loc> entries get
+ * the right host.
  */
 class GenerateSitemapCacheTask extends BuildTask
 {
     /**
+     * Matches the upstream task segment so the same cron line works on SS4/5 and CMS 6.
+     *
      * @var string
      */
-    private static $segment = 'GenerateSitemapCacheTask';
+    private static $segment = 'GenerateGoogleSitemapTask';
 
     /**
      * @var string
